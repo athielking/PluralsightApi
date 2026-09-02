@@ -1,0 +1,6 @@
+@PluralsightApi.Web_HostAddress = http://localhost:5032
+
+GET {{PluralsightApi.Web_HostAddress}}/api/inventory/
+Accept: application/json
+
+###

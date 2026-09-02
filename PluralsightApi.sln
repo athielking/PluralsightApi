@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37614.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluralsightApi.Web", "PluralsightApi.Web\PluralsightApi.Web.csproj", "{32E55F32-74FF-45D0-2DE5-21E9E0D12ADE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluralsightApi.Tests", "PluralsightApi.Tests\PluralsightApi.Tests.csproj", "{115BF27A-6836-46A6-93E9-9B0CFA423B30}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{32E55F32-74FF-45D0-2DE5-21E9E0D12ADE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32E55F32-74FF-45D0-2DE5-21E9E0D12ADE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32E55F32-74FF-45D0-2DE5-21E9E0D12ADE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32E55F32-74FF-45D0-2DE5-21E9E0D12ADE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{115BF27A-6836-46A6-93E9-9B0CFA423B30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{115BF27A-6836-46A6-93E9-9B0CFA423B30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{115BF27A-6836-46A6-93E9-9B0CFA423B30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{115BF27A-6836-46A6-93E9-9B0CFA423B30}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {74588D0F-4FA0-4D25-BCCE-CDCB40706016}
+	EndGlobalSection
+EndGlobal
