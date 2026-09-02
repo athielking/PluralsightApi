@@ -46,7 +46,9 @@ jobs:
       run: dotnet publish "PluralsightApi.Web/PluralsightApi.Web.csproj" -c Release -o ./publish --self-contained -r linux-x64 /p:UseAppHost=true
 
     - name: Zip Artifact
-      run: zip app.zip ./publish
+      run: |
+        cd ./publish 
+        zip -r ../app.zip .
 
     - id: upload
       name: Upload Artifact
