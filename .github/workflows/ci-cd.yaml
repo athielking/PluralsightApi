@@ -63,12 +63,12 @@ jobs:
     
     steps:
     - name: Download Artifact
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: dotnet-webapp        
 
     - name: Azure Login
-      uses: azure/login@v2
+      uses: azure/login@v3
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
