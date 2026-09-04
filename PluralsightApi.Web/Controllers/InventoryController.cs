@@ -19,11 +19,6 @@ namespace PluralsightApi.Web.Controllers
         [HttpGet("/{id}")]
         public ActionResult<LocationInventory> GetById(int id)
         {
-            if (id == 0)
-            {
-                return BadRequest();
-            }
-            
             var inventory = _inventoryService.GetLocationInventory(id);
             if (inventory == null)
             {
