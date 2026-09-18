@@ -23,4 +23,5 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
 
-    - run: ls PluralsightApi.Web
+    - name: Test
+      run: dotnet test "PluralsightApi.Tests/PluralsightApi.Tests.csproj"
