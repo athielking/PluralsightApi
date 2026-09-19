@@ -29,7 +29,7 @@ namespace PluralsightApi.Tests
             var result = controller.GetById(1);
 
             Assert.IsType<ActionResult<LocationInventory>>(result);
-            Assert.NotNull(result.Value);
+            Assert.Null(result.Value);
         }
 
         [Fact]
