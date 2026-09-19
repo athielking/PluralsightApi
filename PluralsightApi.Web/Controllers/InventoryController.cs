@@ -13,7 +13,7 @@ namespace PluralsightApi.Web.Controllers
 
         public InventoryController(IInventoryService inventoryService)
         {
-            _inventoryService = inventoryService;
+            _inventoryService = inventoryService
         }
 
         [HttpGet("/{id}")]
