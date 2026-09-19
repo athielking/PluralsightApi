@@ -25,7 +25,7 @@ namespace PluralsightApi.Web.Controllers
                 return NotFound();
             }
 
-            return inventory;
+            return inventory
         }
 
         [HttpGet("")]
