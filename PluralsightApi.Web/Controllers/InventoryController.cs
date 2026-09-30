@@ -13,6 +13,7 @@ namespace PluralsightApi.Web.Controllers
 
         public InventoryController(IInventoryService inventoryService)
         {
+            // add a comment
             _inventoryService = inventoryService;
         }
 
