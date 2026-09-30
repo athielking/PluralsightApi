@@ -59,6 +59,13 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
 
+    strategy:
+      max-parallel: 1
+      matrix:
+        environment: [Dev, Prod]
+
+    environment:
+      name: ${{ matrix.environment }}
     steps:
     - name: Download Artifact
       uses: actions/download-artifact@v8
@@ -73,7 +80,7 @@ jobs:
     - name: Deploy to Azure
       uses: azure/webapps-deploy@v2
       with:
-        app-name: pluralsight-api
+        app-name: ${{ vars.APP_SERVICE }}
         package: app.zip
 
 
