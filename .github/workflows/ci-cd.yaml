@@ -55,6 +55,7 @@ jobs:
         path: app.zip                 
 
   deploy:
+    if: ${{ github.ref_name == 'main' }}
     needs: build
     runs-on: ubuntu-latest
 
