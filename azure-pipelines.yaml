@@ -1,0 +1,103 @@
+name: $(Date:yyyyMMdd).$(Rev:r)
+
+trigger:
+- main
+
+pr:
+- main
+
+stages:
+- stage: BuildAndTest
+  displayName: Build and Test
+  jobs:
+    job: build
+    displayName: Build the Application
+    pool:
+      vm-image: 'ubuntu-latest'
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '10.0.x'
+
+    - script: dotnet restore
+      displayName: Restore Dependencies
+
+    - script: dotnet build --no-restore --configuration Release
+      displayName: Build
+
+    - script: dotnet test "PluralsightApi.Tests/PluralsightApi.Tests.csproj" --collect "XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura
+      condition: succeeded()
+      displayName: Run Tests and Collect Code Coverage
+
+    - task: PublishCodeCoverageResults@2
+      inputs:
+        codeCoverageTool: 'Cobertura'
+        summaryFileLocation: '**/coverage.cobertura.xml'
+        reportDirectory: ''
+        failIfCoverageEmpty: false
+
+    - script: dotnet publish "PluralsightApi.Web/PluralsightApi.Web.csproj" -c Release -o $(Build.ArtifactStagingDirectory)/publish --self-contained -r linux-x64 /p:UseAppHost=true
+      displayName: Publish Application
+
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/publish'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'
+        replaceExistingArchive: true
+      displayName: Create Zip Artifact
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: '$(Build.ArtifactStagingDirectory)/app.zip'
+        artifactName: 'dotnet-webapp'
+
+- stage: DeployDev
+  displayName: Deploy to Azure Dev
+  dependsOn: BuildAndTest
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  variables:
+  - group: Pluralsight-Dev
+  jobs:
+  - deployment: DeployToAzure
+    displayName: Deploy to Dev Azure App Service
+    environment: Dev    
+    pool:
+      vmImage: 'ubuntu-latest'    
+    strategy:
+      runOnce:
+        deploy:        
+          steps:
+            - task: AzureWebApp@1
+              inputs:
+                azureSubscription: pluralsightConnection
+                appType: 'webAppLinux'
+                appName: '$(appService)'
+                package: '$(Pipeline.Workspace)/dotnet-webapp/app.zip'
+
+- stage: DeployProd
+  displayName: Deploy to Azure Prod
+  dependsOn: DeployDev
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  variables:
+  - group: Pluralsight-Prod
+  jobs:
+  - deployment: DeployToAzure
+    displayName: Deploy to Prod Azure App Service
+    environment: Prod
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      runOnce:
+        deploy:         
+          steps:
+            - task: AzureWebApp@1
+              inputs:
+                azureSubscription: pluralsightConnection
+                appType: 'webAppLinux'
+                appName: '$(appService)'
+                package: '$(Pipeline.Workspace)/dotnet-webapp/app.zip'                 
+
+    
