@@ -10,7 +10,7 @@ stages:
 - stage: BuildAndTest
   displayName: Build and Test
   jobs:
-    job: build
+  - job: build
     displayName: Build the Application
     pool:
       vm-image: 'ubuntu-latest'
