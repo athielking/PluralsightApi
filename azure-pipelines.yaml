@@ -13,7 +13,7 @@ stages:
   - job: build
     displayName: Build the Application
     pool:
-      vm-image: 'ubuntu-latest'
+      vmImage: 'ubuntu-latest'
     steps:
     - task: UseDotNet@2
       inputs:
