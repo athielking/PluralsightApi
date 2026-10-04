@@ -1,0 +1,79 @@
+stages:
+  - build
+  - test
+  - package
+  - deploy_dev
+  - deploy_prod
+
+build:
+  stage: build
+  image: mcr.microsoft.com/dotnet/sdk:10.0-noble
+  script:
+    - dotnet restore
+    - dotnet build --no-restore --configuration Release
+  artifacts:
+    paths:
+      - WiredBrainApi.Web/bin/      
+
+test:
+  stage: test
+  image: mcr.microsoft.com/dotnet/sdk:10.0-noble
+  dependencies:
+    - build
+  script:
+    - dotnet tool install -g dotnet-reportgenerator-globaltool
+    - export PATH="$PATH:/root/.dotnet/tools"
+    - dotnet test "PluralsightApi.Tests/PluralsightApi.Tests.csproj" --collect "XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura
+    - reportgenerator -reports:"PluralsightApi.Tests/TestResults/*/coverage.cobertura.xml" -targetdir:"coverage" -reporttypes:Html
+  artifacts:
+    paths:
+      - coverage/
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: PluralsightApi.Tests/TestResults/*/coverage.cobertura.xml
+
+package:
+  before_script:
+    - apt-get update
+    - apt-get install -y zip unzip
+  stage: package
+  image: mcr.microsoft.com/dotnet/sdk:10.0-noble
+  dependencies:
+    - build
+  script:
+    - dotnet publish "PluralsightApi.Web/PluralsightApi.Web.csproj" -c Release -o ./publish --self-contained -r linux-x64 /p:UseAppHost=true
+    - (cd publish && zip -r ../app.zip .)
+  artifacts:
+    paths:
+      - app.zip
+
+deploy_dev:
+  stage: deploy_dev
+  image: mcr.microsoft.com/azure-cli
+  environment:
+    name: Dev
+    deployment_tier: development
+  dependencies:
+    - package
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "web")' 
+  script:
+    - az login --service-principal --username $APP_ID --password $CLIENT_SECRET --tenant $TENANT_ID
+    - az webapp deploy --name "pluralsight-api" --resource-group "Pluralsight" --src-path app.zip
+
+deploy_prod:
+  stage: deploy_prod
+  image: mcr.microsoft.com/azure-cli
+  environment:
+    name: Prod
+    deployment_tier: production
+  dependencies:
+    - package
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" && ($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "web")'
+      when: manual
+  allow_failure: false
+  script:
+    - az login --service-principal --username $APP_ID --password $CLIENT_SECRET --tenant $TENANT_ID
+    - az webapp deploy --name "pluralsight-api-prod" --resource-group "Pluralsight" --src-path app.zip
